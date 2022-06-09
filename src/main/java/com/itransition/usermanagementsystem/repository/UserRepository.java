@@ -10,13 +10,14 @@ import java.util.List;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
+    Boolean existsByEmail(String email);
+
     User findByEmail(String email);
 
     void deleteById(Long id);
 
     @Query(value = "select * from users order by id", nativeQuery = true)
     List<User> findAllUsersById();
-
 
 
 }

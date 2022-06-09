@@ -28,15 +28,21 @@ public class UserService implements UserDetailsService {
     BCryptPasswordEncoder passwordEncoder;
 
     public void save(UserRegistrationDto registrationDto) {
+
         User newUser = new User();
+
         newUser.setFullName(registrationDto.getFullName());
         newUser.setEmail(registrationDto.getEmail());
         newUser.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
         newUser.setRegistrationTime(Timestamp.valueOf(LocalDateTime.now()));
         newUser.setLastLoginTime(Timestamp.valueOf(LocalDateTime.now()));
+
         userRepository.save(newUser);
     }
 
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -116,13 +122,6 @@ public class UserService implements UserDetailsService {
             userRepository.save(user);
         }
     }
-
-
-
-
-
-
-
 
 
 }

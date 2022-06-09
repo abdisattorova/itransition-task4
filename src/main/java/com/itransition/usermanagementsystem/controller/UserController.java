@@ -5,9 +5,15 @@ import com.itransition.usermanagementsystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 @Controller
 public class UserController {
@@ -24,7 +30,23 @@ public class UserController {
 
 
     @PostMapping("/registration")
-    public String registerUser(@ModelAttribute("user")UserRegistrationDto registrationDto) {
+    public String registerUser(
+            @Valid
+            @ModelAttribute("user")
+                    UserRegistrationDto registrationDto,
+            BindingResult result) {
+        if (result.hasErrors()) {
+            return "registration";
+        }
+
+        if (userService.existsByEmail(registrationDto.getEmail())) {
+            result.addError(new
+                    FieldError("user",
+                    "email",
+                    "Email is already taken!"));
+            return "registration";
+        }
+
         userService.save(registrationDto);
         return "redirect:/registration?success";
     }
@@ -63,10 +85,6 @@ public class UserController {
         userService.unblockAll();
         return "redirect:/";
     }
-
-
-
-
 
 
 }
